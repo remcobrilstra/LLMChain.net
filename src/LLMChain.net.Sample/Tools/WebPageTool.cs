@@ -14,10 +14,10 @@ namespace LLMChain.Sample.Tools
         public ToolArgs Parameters => new ToolArgs
         {
             ReturnType = "object",
-            Properties = new PropertyDescription[]
-            {
-                new PropertyDescription ("url") {Description = "the url of the webpage that you want to access" }
-            }
+            Properties =
+            [
+                new("url", "the url of the webpage that you want to access" )
+            ]
         };
 
         public async Task<string> Invoke(Dictionary<string, string> args)

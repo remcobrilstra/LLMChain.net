@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{72C67670-99E3-4262-8969-7D046B794171}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
