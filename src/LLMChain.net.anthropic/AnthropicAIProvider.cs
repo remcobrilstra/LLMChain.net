@@ -36,5 +36,9 @@ namespace LLMChain.Anthropic
             throw new NotImplementedException();
         }
 
+        public Task<ChatMessage> StreamChatMessage(ChatMessage message, Action<string> OnStream, IEnumerable<ITool> tools = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

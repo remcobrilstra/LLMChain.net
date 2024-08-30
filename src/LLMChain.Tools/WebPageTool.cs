@@ -1,7 +1,7 @@
 ﻿using LLMChain.Core;
 using System.Text.RegularExpressions;
 
-namespace LLMChain.Sample.Tools
+namespace LLMChain.Tools
 {
     /// <summary>
     /// A extremely crappy way to retrieve the full content of a webpage

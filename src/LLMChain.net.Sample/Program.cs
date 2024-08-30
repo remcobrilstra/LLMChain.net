@@ -1,16 +1,16 @@
 ﻿
 using LLMChain.Core;
 using LLMChain.OpenAI;
-using LLMChain.Sample.Tools;
+using LLMChain.Tools;
 using Microsoft.Extensions.Configuration;
 
 IConfiguration configuration = LoadConfiguration();
 
 string systemPrompt = configuration["General:SystemPrompt"] ?? String.Empty;
+bool StreamChatResponse = Boolean.Parse(configuration["General:StreamResponse"]);
 
 //small addition to the system prompt, to make sure we are aware of the current date
 systemPrompt += $"\n\nTodays date is:{DateTime.Now.ToLongDateString()}\n";
-
 
 
 IAIProvider activeProvider = new OpenAIProvider(configuration["OpenAI:ApiKey"], "gpt-4o");
@@ -32,19 +32,31 @@ Console.WriteLine($"Welcome human, you may start your conversation with the almi
 Console.WriteLine($"-------------------");
 
 
+
+
+
 while (true)
 {
-    Console.Write("[Human]:");
+    Console.Write("[Human]: ");
     string input = Console.ReadLine();
 
-    if (input.ToLower() == "exit")
+
+    if (StreamChatResponse)
     {
-        break;
+        Console.Write($"[AI]: ");
+        var resp = await chatOrchestrator.StreamChatMessageAsync(new ChatMessage { Content = input }, chunk =>
+        {
+            Console.Write(chunk);
+            Console.Out.Flush();
+        });
+        Console.WriteLine($" ");
+    }
+    else
+    {
+        var resp = await chatOrchestrator.SendChatMessageAsync(new ChatMessage { Content = input });
+        Console.WriteLine($"[AI]:{resp.Content}");
     }
 
-    var resp = await chatOrchestrator.SendChatMessageAsync(new ChatMessage { Content = input });
-
-    Console.WriteLine($"[AI]:{resp.Content}");
 }
 
 static IConfiguration LoadConfiguration()

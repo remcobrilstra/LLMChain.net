@@ -22,6 +22,8 @@ namespace LLMChain.OpenAI.Models
     {
         public uint Index { get; set; }
         public OpenAIMessage Message { get; set; }
+
+        public OpenAIMessage Delta { get; set; }
         public object Logprobs { get; set; }
         public string FinishReason { get; set; }
     }

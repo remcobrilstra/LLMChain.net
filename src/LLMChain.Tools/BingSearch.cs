@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace LLMChain.Sample.Tools
+namespace LLMChain.Tools
 {
     /// <summary>
     /// A tool that allows you to search Bing for information.

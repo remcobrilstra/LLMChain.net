@@ -43,6 +43,15 @@ public class ChatOrchestrator
         return response;
     }
 
+    public async Task<ChatMessage> StreamChatMessageAsync(ChatMessage message, Action<string> OnStream)
+    {
+        ChatHistory.Add(message);
+        var response = await AIProvider.StreamChatMessage(message, OnStream, Tools);
+
+        ChatHistory.Add(response);
+        return response;
+    }
+
     public List<ChatMessage> GetHistory()
     {
         return new List<ChatMessage>(ChatHistory);
