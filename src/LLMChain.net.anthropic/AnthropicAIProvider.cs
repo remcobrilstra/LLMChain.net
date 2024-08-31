@@ -11,6 +11,10 @@ namespace LLMChain.Anthropic
     {
         public string DisplayName => "Anthropic AI";
 
+        public string[] AvailableModels => throw new NotImplementedException();
+
+        public string ActiveModel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public Task<ChatMessage> SendChatMessageAsync(ChatMessage message, IEnumerable<ITool> tools = null)
         {
             throw new NotImplementedException();
@@ -36,5 +40,9 @@ namespace LLMChain.Anthropic
             throw new NotImplementedException();
         }
 
+        public Task<ChatMessage> StreamChatMessage(ChatMessage message, Action<string> OnStream, IEnumerable<ITool> tools = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

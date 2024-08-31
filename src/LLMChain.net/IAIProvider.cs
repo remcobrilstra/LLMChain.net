@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace LLMChain.Core;
 
-namespace LLMChain.Core
+public interface IAIProvider
 {
-    public interface IAIProvider
-    {
-        public string DisplayName { get; }
-        Task<ChatMessage> SendChatMessageAsync(ChatMessage message, IEnumerable<ITool> tools = null);
-        void SetSystemPrompt(string sysPrompt);
-        string GetSystemPrompt();
+    string DisplayName { get; }
 
-        List<ChatMessage> GetHistory();
-        void ClearHistory();
+    string ActiveModel { get; set; }
+    string[] AvailableModels { get; }
 
-    }
+
+    Task<ChatMessage> SendChatMessageAsync(ChatMessage message, IEnumerable<ITool> tools = null);
+    Task<ChatMessage> StreamChatMessage(ChatMessage message, Action<string> OnStream, IEnumerable<ITool> tools = null);
+
+    void SetSystemPrompt(string sysPrompt);
+    string GetSystemPrompt();
+
+    List<ChatMessage> GetHistory();
+    void ClearHistory();
+
 }

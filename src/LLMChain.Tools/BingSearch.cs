@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace LLMChain.Sample.Tools
+namespace LLMChain.Tools
 {
     /// <summary>
     /// A tool that allows you to search Bing for information.
@@ -19,8 +19,9 @@ namespace LLMChain.Sample.Tools
         {
             ReturnType = "object",
             Required = ["query"],
-            Properties = [
-                new("query"){Description = "The search query you want to search for"}
+            Properties = 
+            [
+                new("query", "The search query you want to search for")
             ]
         };
 
