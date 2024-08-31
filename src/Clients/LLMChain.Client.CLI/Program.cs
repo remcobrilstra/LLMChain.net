@@ -27,12 +27,12 @@ chatOrchestrator.AddTool(new WebPageTool());
 
 
 //Simple chatbot
+
+SelectModel(activeProvider);
+
 Console.WriteLine($"-------------------");
 Console.WriteLine($"Welcome human, you may start your conversation with the almighty AI, you will be served by {chatOrchestrator.AIProvider.DisplayName} today");
 Console.WriteLine($"-------------------");
-
-
-
 
 
 while (true)
@@ -67,4 +67,32 @@ static IConfiguration LoadConfiguration()
     .AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
     IConfiguration configuration = builder.Build();
     return configuration;
+}
+
+static void SelectModel(IAIProvider activeProvider)
+{
+    int i = 1;
+    Console.WriteLine("Available models:");
+    activeProvider.AvailableModels.ToList().ForEach(model =>
+    {
+        Console.WriteLine($"{i}. {model}");
+        i++;
+    });
+
+    while (true)
+    {
+        Console.Write($"Choose your model (1-{i - 1}):");
+        if (Int32.TryParse(Console.ReadLine(), out int modelId))
+        {
+            string modelName = activeProvider.AvailableModels[modelId - 1];
+            activeProvider.ActiveModel = modelName;
+
+            Console.WriteLine($"Model set to '{modelName}'");
+            break;
+        }
+        else
+        {
+            Console.WriteLine($"Thats not a valid model identifier, please try again");
+        }
+    }
 }

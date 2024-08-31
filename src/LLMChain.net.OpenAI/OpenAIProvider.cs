@@ -10,7 +10,7 @@ namespace LLMChain.OpenAI
 {
     public class OpenAIProvider : IAIProvider
     {
-        public string DisplayName => $"OpenAI - {Model}";
+        public string DisplayName => $"OpenAI - {ActiveModel}";
 
 
         private SystemMessage _systemPrompt { get; set; } = new SystemMessage();
@@ -23,7 +23,7 @@ namespace LLMChain.OpenAI
         public float Temperature { get; set; } = 0.7f;
         private string ApiKey { get; set; }
 
-        public string Model { get; private set; }
+        public string ActiveModel { get; set; }
 
 
         JsonSerializerOptions jsSerializerOption = new JsonSerializerOptions
@@ -36,11 +36,35 @@ namespace LLMChain.OpenAI
 
         };
 
+        private string[] _availableModels = null;
+        public string[] AvailableModels
+        {
+            get
+            {
+                if(_availableModels == null)
+                {
+                    using (HttpClient wClient = new HttpClient())
+                    {
+                        wClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiKey);
+                        var response = wClient.GetAsync($"{ApiEndpointRoot}models").Result;
+                        var responseContent = response.Content.ReadAsStringAsync().Result;
+                        var models = JsonSerializer.Deserialize<ModelListResponse>(responseContent, jsSerializerOption);
+                        _availableModels = models.data.Select(x => x.id).ToArray();
+                    }
+                }
+
+                return _availableModels;
+            }
+        }
+
+
+
+
         public OpenAIProvider(string apiKey, string model, string apiEndpoint = API_ENDPOINT)
         {
             ApiEndpointRoot = apiEndpoint;
             ApiKey = apiKey;
-            Model = model;
+            ActiveModel = model;
             ClearHistory();
         }
 
@@ -87,7 +111,7 @@ namespace LLMChain.OpenAI
             {
                 messages = _history.ToArray(),
                 functions = ConvertInternalToOpenAIFunctions(tools),
-                model = Model,
+                model = ActiveModel,
                 stream = true,
                 temperature = Temperature
             };
@@ -200,7 +224,7 @@ namespace LLMChain.OpenAI
             {
                 messages = _history.ToArray(),
                 functions = ConvertInternalToOpenAIFunctions(tools),
-                model = Model,
+                model = ActiveModel,
                 stream = false,
                 temperature = Temperature
             };

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Core", "LLMChain.net\LLMChain.Core.csproj", "{2FAA6F1E-ECE7-4DC8-89EB-07092BCE4C7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Client.CLI", "LLMChain.net.Sample\LLMChain.Client.CLI.csproj", "{CB5C9C1C-9542-42E7-A947-518D3AC26E17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Client.CLI", "Clients\LLMChain.Client.CLI\LLMChain.Client.CLI.csproj", "{CB5C9C1C-9542-42E7-A947-518D3AC26E17}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.OpenAI", "LLMChain.net.OpenAI\LLMChain.OpenAI.csproj", "{FC70556F-DBEF-4470-9018-4B925444A2CF}"
 EndProject
@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLMChain.Tools", "LLMChain.Tools\LLMChain.Tools.csproj", "{3439167E-DCEF-414E-AA11-6707D305FFC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Tools", "LLMChain.Tools\LLMChain.Tools.csproj", "{3439167E-DCEF-414E-AA11-6707D305FFC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{3069A039-AB20-49B5-8FA8-B28B2A9710A0}"
 EndProject
