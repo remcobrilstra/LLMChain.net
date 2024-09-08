@@ -1,4 +1,4 @@
-﻿using LLMChain.Core;
+﻿using LLMChain.Core.Tools;
 
 namespace LLMChain.OpenAI.Models
 {
@@ -8,7 +8,14 @@ namespace LLMChain.OpenAI.Models
         public string model { get; set; }
         public Function[] functions { get; set; }
         public bool stream { get; set; }
+
+        public StreamOptions stream_options { get; set; }
         public float temperature { get; set; }
+    }
+
+    public class StreamOptions
+    {
+        public bool include_usage { get; set; }
     }
 
     enum MessageRole
@@ -30,6 +37,7 @@ namespace LLMChain.OpenAI.Models
 
         public string Name { get; set; }
         public Function_Call function_call { get; set; }
+        public uint TokenCost { get; internal set; }
     }
 
     class SystemMessage : OpenAIMessage
@@ -54,6 +62,7 @@ namespace LLMChain.OpenAI.Models
         {
             role = MessageRole.Assistant;
         }
+
     }
     class Function_Call
     {

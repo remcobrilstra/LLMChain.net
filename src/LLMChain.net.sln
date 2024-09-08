@@ -5,8 +5,6 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Core", "LLMChain.net\LLMChain.Core.csproj", "{2FAA6F1E-ECE7-4DC8-89EB-07092BCE4C7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Client.CLI", "Clients\LLMChain.Client.CLI\LLMChain.Client.CLI.csproj", "{CB5C9C1C-9542-42E7-A947-518D3AC26E17}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.OpenAI", "LLMChain.net.OpenAI\LLMChain.OpenAI.csproj", "{FC70556F-DBEF-4470-9018-4B925444A2CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Anthropic", "LLMChain.net.anthropic\LLMChain.Anthropic.csproj", "{55F0D4BD-7194-4318-9368-45AEE6125EC8}"
@@ -23,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Tools", "LLMChain.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{3069A039-AB20-49B5-8FA8-B28B2A9710A0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Client.CLI", "Clients\LLMChain.Client.CLI\LLMChain.Client.CLI.csproj", "{18F679B0-1E16-4881-A1BB-0A9AADB825E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,10 +33,6 @@ Global
 		{2FAA6F1E-ECE7-4DC8-89EB-07092BCE4C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FAA6F1E-ECE7-4DC8-89EB-07092BCE4C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FAA6F1E-ECE7-4DC8-89EB-07092BCE4C7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CB5C9C1C-9542-42E7-A947-518D3AC26E17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CB5C9C1C-9542-42E7-A947-518D3AC26E17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CB5C9C1C-9542-42E7-A947-518D3AC26E17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CB5C9C1C-9542-42E7-A947-518D3AC26E17}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC70556F-DBEF-4470-9018-4B925444A2CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC70556F-DBEF-4470-9018-4B925444A2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC70556F-DBEF-4470-9018-4B925444A2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,14 +45,18 @@ Global
 		{3439167E-DCEF-414E-AA11-6707D305FFC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3439167E-DCEF-414E-AA11-6707D305FFC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3439167E-DCEF-414E-AA11-6707D305FFC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18F679B0-1E16-4881-A1BB-0A9AADB825E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F679B0-1E16-4881-A1BB-0A9AADB825E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18F679B0-1E16-4881-A1BB-0A9AADB825E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18F679B0-1E16-4881-A1BB-0A9AADB825E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{CB5C9C1C-9542-42E7-A947-518D3AC26E17} = {3069A039-AB20-49B5-8FA8-B28B2A9710A0}
 		{FC70556F-DBEF-4470-9018-4B925444A2CF} = {83BF45CC-5F05-4413-8166-F2A7321C51EE}
 		{55F0D4BD-7194-4318-9368-45AEE6125EC8} = {83BF45CC-5F05-4413-8166-F2A7321C51EE}
+		{18F679B0-1E16-4881-A1BB-0A9AADB825E0} = {3069A039-AB20-49B5-8FA8-B28B2A9710A0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4C9AFE5F-2F52-4DB4-9D5D-4921D759D61A}

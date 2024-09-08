@@ -1,4 +1,4 @@
-﻿using LLMChain.Core;
+﻿using LLMChain.Core.Tools;
 using System.Text.RegularExpressions;
 
 namespace LLMChain.Tools
@@ -9,6 +9,7 @@ namespace LLMChain.Tools
     /// </summary>
     public class WebPageTool : ITool
     {
+        public string ID => "CORE.WEBSCRAPE";
         public string Name => "WebPage";
         public string Description => "Retrieves the full content of a given webpage so it may be analyzed";
         public ToolArgs Parameters => new ToolArgs

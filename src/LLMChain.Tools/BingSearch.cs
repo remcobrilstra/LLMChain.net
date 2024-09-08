@@ -1,4 +1,4 @@
-﻿using LLMChain.Core;
+﻿using LLMChain.Core.Tools;
 using System.Text;
 using System.Text.Json;
 
@@ -11,6 +11,7 @@ namespace LLMChain.Tools
     /// </summary>
     public class BingSearchTool : ITool
     {
+        public string ID => "CORE.SEARCH.BING";
         public string Name => "Search";
 
         public string Description => "Useful for when you need to answer questions about current events.";

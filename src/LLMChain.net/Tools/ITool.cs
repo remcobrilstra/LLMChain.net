@@ -1,7 +1,8 @@
-﻿namespace LLMChain.Core;
+﻿namespace LLMChain.Core.Tools;
 
 public interface ITool
 {
+    public string ID { get; }
     string Name { get; }
     string Description { get; }
     ToolArgs Parameters { get; }

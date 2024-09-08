@@ -1,20 +1,21 @@
-﻿namespace LLMChain.Core;
+﻿using LLMChain.Core.Conversations;
+using LLMChain.Core.Tools;
+
+namespace LLMChain.Core;
 
 public interface IAIProvider
 {
+    string Key { get; }
     string DisplayName { get; }
 
     string ActiveModel { get; set; }
     string[] AvailableModels { get; }
 
 
-    Task<ChatMessage> SendChatMessageAsync(ChatMessage message, IEnumerable<ITool> tools = null);
-    Task<ChatMessage> StreamChatMessage(ChatMessage message, Action<string> OnStream, IEnumerable<ITool> tools = null);
+    Task<Message> SendChatMessageAsync(Message message,ConversationHistory history, IEnumerable<ITool> tools = null);
+    Task<Message> StreamChatMessage(Message message, ConversationHistory history, Action<string> OnStream, IEnumerable<ITool> tools = null);
 
     void SetSystemPrompt(string sysPrompt);
     string GetSystemPrompt();
-
-    List<ChatMessage> GetHistory();
-    void ClearHistory();
 
 }

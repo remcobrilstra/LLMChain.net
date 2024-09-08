@@ -1,4 +1,4 @@
-﻿using LLMChain.Core;
+﻿using LLMChain.Core.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,7 @@ namespace LLMChain.Tools
     /// </summary>
     public class WeatherTool: ITool
     {
+        public string ID => "CORE.WEATHER";
         public string Name => "Weather";
         public string Description => "Get the weather for a location";
         public ToolArgs Parameters => new ToolArgs

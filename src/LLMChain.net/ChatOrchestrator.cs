@@ -1,59 +1,69 @@
-﻿namespace LLMChain.Core;
+﻿using LLMChain.Core.Conversations;
+using LLMChain.Core.Models;
+using LLMChain.Core.Tools;
 
+namespace LLMChain.Core;
+
+/// <summary>
+/// Simple Orchestrator for Chat implementations using a single AIProvider
+/// </summary>
 public class ChatOrchestrator
 {
-    public IAIProvider AIProvider { get; private set; }
+    private Dictionary<string,IAIProvider> aIProviders = new Dictionary<string, IAIProvider>();
+    public Conversation ActiveConversation { get; set; }
+    public ModelInformation[]? ModelInformation { get; set; }
 
-    public List<ITool> Tools { get; private set; } = new List<ITool>();
-    private List<ChatMessage> ChatHistory { get; set; } = new List<ChatMessage>();
-
-    public String SystemPrompt
+    public ChatOrchestrator()
     {
-        get
-        {
-            return AIProvider.GetSystemPrompt();
-        }
-        set
-        {
-            AIProvider.SetSystemPrompt(value);
-        }
     }
 
 
-    public ChatOrchestrator(IAIProvider aiProvider)
+    public IAIProvider GetAIProvider(string key)
     {
-        AIProvider = aiProvider;
+        return aIProviders[key];
     }
 
-    public void AddTool(ITool tool)
+    public void AddAIProvider(IAIProvider provider)
     {
-        Tools.Add(tool);
-    }
-    public void ClearHistory()
-    {
-        ChatHistory.Clear();
+        aIProviders.Add(provider.Key, provider);
     }
 
-    public async Task<ChatMessage> SendChatMessageAsync(ChatMessage message)
+    public async Task<Message> SendChatMessageAsync(Message message)
     {
-        ChatHistory.Add(message);
-        var response = await AIProvider.SendChatMessageAsync(message, Tools);
+        ActiveConversation.History.PushMessage(message);
 
-        ChatHistory.Add(response);
+        //Get the AIProvider from the active conversation
+        var AIProvider = aIProviders[ActiveConversation.Agent.ModelProvider];
+        AIProvider.ActiveModel = ActiveConversation.Agent.Model;
+        ActiveConversation.History.SetSystemPrompt(ActiveConversation.Agent.SystemPrompt);
+
+        var response = await AIProvider.SendChatMessageAsync(message, ActiveConversation.History, ActiveConversation.Agent.Tools);
+
+        ActiveConversation.History.PushMessage(response);
         return response;
     }
 
-    public async Task<ChatMessage> StreamChatMessageAsync(ChatMessage message, Action<string> OnStream)
+    public async Task<Message> StreamChatMessageAsync(Message message, Action<string> OnStream)
     {
-        ChatHistory.Add(message);
-        var response = await AIProvider.StreamChatMessage(message, OnStream, Tools);
+        ActiveConversation.History.PushMessage(message);
 
-        ChatHistory.Add(response);
+        //Get the AIProvider from the active conversation
+        var AIProvider = aIProviders[ActiveConversation.Agent.ModelProvider];
+        AIProvider.ActiveModel = ActiveConversation.Agent.Model;
+        ActiveConversation.History.SetSystemPrompt(ActiveConversation.Agent.SystemPrompt);
+
+        var response = await AIProvider.StreamChatMessage(message, ActiveConversation.History, OnStream, ActiveConversation.Agent.Tools);
+
+        ActiveConversation.History.PushMessage(response);
         return response;
     }
 
-    public List<ChatMessage> GetHistory()
+    public void NewConversation(string systemPrompt)
     {
-        return new List<ChatMessage>(ChatHistory);
+        ActiveConversation = new Conversation()
+        {
+            History = new ConversationHistory()
+        };
+        ActiveConversation.History.SetSystemPrompt(systemPrompt);
     }
 }
