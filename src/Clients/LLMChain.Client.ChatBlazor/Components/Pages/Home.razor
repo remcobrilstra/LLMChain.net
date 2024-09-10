@@ -1,0 +1,258 @@
+﻿@page "/"
+@using LLMChain.Core
+@using LLMChain.Core.Conversations
+@using LLMChain.Core.Models
+@using LLMChain.Core.Tools
+@using LLMChain.OpenAI
+@using LLMChain.Tools
+@using Markdig;
+@using Microsoft.Extensions.Configuration
+@inject IJSRuntime JS
+
+
+<!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="menu-header">
+            <a href="javascript:void(0)" class="toggleButton" onclick="toggleNav()"><i class="bi-list"></i></a>
+        </div>
+        <div class="menu-body">
+        <a href="javascript:void(0)" id="new-chat-btn" data-toggle="show" data-modal="#newConvModal">+ Start New Chat!</a>
+            <div id="conversations">
+            @foreach (var conv in Conversations)
+            {
+                <a @onclick="(()=>SetActiveConversation(conv))" data-id="@conv.Id" class="conversation-item @(conv?.Id == ActiveConversation?.Id ? "active":"")">
+                    <p>@conv.Name</p>
+                    </a>
+            }
+            </div>
+        </div>
+        <div class="menu-footer">
+            <a id="setting-menu-item" data-modal="settingsModal" data-toggle="show"> <span><i class="bi-gear"></i></span> <p>Settings</p></a>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="main">
+        <div class="content-header">
+        <h2>@ActiveConversation?.Name</h2><p>$ @ActiveConversation?.CalculateCost().ToString("n2")</p>
+        </div>
+        <!-- Chats container -->
+        <div class="chat-container">
+
+            @if (ActiveConversation == null)
+            {
+                //welcome placeholder
+            }
+            else
+            {
+                foreach(var message in ActiveConversation.History.GetFullHistory())
+                {
+
+                    if(!message.IsInternal)
+                    {
+                
+                        if(message.Type == Message.MessageType.User)
+                        {
+                            <div class="chat outgoing">
+                                <div class="chat-content">
+                                    <div class="chat-details">
+                                        <img src="https://avatar.iran.liara.run/public/40" alt="user-img">
+                                        <p>@((MarkupString)Markdown.ToHtml(message.Content))</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="chat incoming">
+                                <div class="chat-content">
+                                    <div class="chat-details">
+                                        <img src="https://avatar.iran.liara.run/public/5" alt="chatbot-img">
+                                    <p>@((MarkupString)Markdown.ToHtml(message.Content))</p>
+                                    </div>
+                                    <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            }
+        </div>
+
+        <!-- Typing container -->
+        <div class="typing-container">
+            <div class="typing-content">
+                <div class="typing-textarea">
+                    <textarea id="chat-input" spellcheck="false" @bind=userInput @onkeyup="@Enter" @oninput="@(e => userInput = (string)e.Value)" placeholder="Enter a prompt here" required></textarea>
+                    <span id="send-btn"><i class="bi-send"></i></span>
+                </div>
+                <div class="typing-controls">
+                    <span id="theme-btn" ><i class="bi-lightbulb"></i></span>
+                    <span id="delete-btn"><i class="bi-trash"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="newConvModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p>New Conversation</p>
+                    <a class="close" data-modal="newConvModal" data-toggle="hide">&times;</a>
+                </div>
+                <div class="modal-body">
+                    <br />
+                    <label for="new-conv-name">Name</label>
+                    <br />
+                    <input id="new-conv-name" />
+                    <br />
+                    <label for="new-conv-prompt">SystemPrompt</label>
+                    <br />
+                    <textarea id="new-conv-prompt"></textarea>
+                    <br />
+                </div>
+                <div class="modal-footer">
+                    <button onclick="AddConversation()">Save</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+<div class="modal fade" id="newConvModal" tabindex="-1" aria-labelledby="newConvModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="newConvModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="settingsModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <p>Settings</p>
+            <a class="close" data-modal="settingsModal" data-toggle="hide">&times;</a>
+        </div>
+        <div class="modal-body">
+            <br />
+            <label for="openAI-key"> OpenAI Key</label><br />
+            <input id="openAI-key" /><br />
+            <label for="openAI-model"> OpenAI Model</label><br />
+            <input id="openAI-model" value="gpt-4o-mini" /><br />
+            <br />
+        </div>
+        <div class="modal-footer">
+            <button onclick="saveSettings()">Save</button>
+        </div>
+    </div>
+
+</div>
+
+
+@inject IConfiguration configuration;
+
+@code{
+    List<Conversation> Conversations = null;
+    Conversation ActiveConversation = null;
+    Agent[] Agents = null;
+
+    ChatOrchestrator chatOrchestrator;
+    string userInput = String.Empty;
+
+    public async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            string cleaninput = userInput.Trim();
+            userInput = string.Empty;
+            Message respmsg = null;
+            var resp = await chatOrchestrator.StreamChatMessageAsync(new Message(cleaninput) { Type = Message.MessageType.User }, chunk =>
+            {
+                // if (respmsg == null)
+                // {
+                //     respmsg = new Message("")
+                //     {
+                //         Type = Message.MessageType.Agent
+                //     };
+                //     ActiveConversation.History.PushMessage(respmsg);
+                // }
+                // respmsg.Content += chunk;
+                StateHasChanged();
+            });
+        }
+    }
+
+
+
+
+    public bool SetActiveConversation(Conversation conv)
+    {
+        chatOrchestrator.ActiveConversation = conv;
+        ActiveConversation = conv;
+        ActiveConversation.Agent.Initialize();
+        return true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // string systemPrompt = configuration["General:SystemPrompt"] ?? string.Empty;
+        // //small addition to the system prompt, to make sure we are aware of the current date
+        // systemPrompt += $"\n\nTodays date is:{DateTime.Now.ToLongDateString()}\n";
+
+        var agentssection = configuration.GetSection("Agents");
+        Agents = agentssection.Get<Agent[]>();
+
+        Conversations = new List<Conversation>()
+        {
+            new Conversation()
+            {
+                Name = "J.A.R.V.I.S.(gpt-4o-mini)",
+                Agent = Agents.FirstOrDefault(a => a.Id == "JARVIS")
+            },
+            new Conversation()
+            {
+                Name = "Carmack",
+                Agent = Agents.FirstOrDefault(a => a.Id == "JOHNCARMACK")
+            },
+            new Conversation()
+            {
+                Name = "Karpathy (gpt-4o)",
+                Agent = Agents.FirstOrDefault(a => a.Id == "KARPATHY")
+            }
+        };
+
+        IAIProvider OpenAiProvider = new OpenAIProvider(configuration["OpenAI:ApiKey"], "gpt-4o");
+
+        chatOrchestrator = new ChatOrchestrator();
+
+        chatOrchestrator.AddAIProvider(OpenAiProvider);
+
+        var modelinfo = configuration.GetSection("ModelInfo");
+        ModelInformation[] models = modelinfo.Get<ModelInformation[]>();
+        ModelInformationRepository.Instance.AddModels(models);
+        chatOrchestrator.ModelInformation = models;
+
+        ToolRepository.Instance.AddTool(new WeatherTool());
+        ToolRepository.Instance.AddTool(new BingSearchTool(configuration["Tools:BingSearch:SubscriptionKey"]));
+        ToolRepository.Instance.AddTool(new WebPageTool());
+        ToolRepository.Instance.AddTool(new OpenBrowser());
+
+
+        await JS.InvokeVoidAsync("getModalAnchors");
+    } 
+
+}

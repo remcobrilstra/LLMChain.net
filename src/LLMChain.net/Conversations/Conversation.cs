@@ -1,6 +1,8 @@
 ﻿namespace LLMChain.Core.Conversations;
 public class Conversation
 {
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; }
     public Agent Agent { get; set; }
     public ConversationHistory History { get; set; }
 

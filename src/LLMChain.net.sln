@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{3069
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Client.CLI", "Clients\LLMChain.Client.CLI\LLMChain.Client.CLI.csproj", "{18F679B0-1E16-4881-A1BB-0A9AADB825E0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMChain.Client.ChatBlazor", "Clients\LLMChain.Client.ChatBlazor\LLMChain.Client.ChatBlazor.csproj", "{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,12 @@ Global
 		{18F679B0-1E16-4881-A1BB-0A9AADB825E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18F679B0-1E16-4881-A1BB-0A9AADB825E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18F679B0-1E16-4881-A1BB-0A9AADB825E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +65,7 @@ Global
 		{FC70556F-DBEF-4470-9018-4B925444A2CF} = {83BF45CC-5F05-4413-8166-F2A7321C51EE}
 		{55F0D4BD-7194-4318-9368-45AEE6125EC8} = {83BF45CC-5F05-4413-8166-F2A7321C51EE}
 		{18F679B0-1E16-4881-A1BB-0A9AADB825E0} = {3069A039-AB20-49B5-8FA8-B28B2A9710A0}
+		{14FB3103-D5A2-4D4E-9631-EF69CC1E4B4C} = {3069A039-AB20-49B5-8FA8-B28B2A9710A0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4C9AFE5F-2F52-4DB4-9D5D-4921D759D61A}

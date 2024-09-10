@@ -11,6 +11,7 @@ internal class Program
 {
     static IConfiguration configuration;
     static ChatOrchestrator chatOrchestrator;
+    static Agent[] Agents;
     private static async Task Main(string[] args)
     {
         LoadConfiguration();
