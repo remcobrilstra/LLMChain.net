@@ -63,8 +63,8 @@ jobs:
 
       # Publish the package to Azure Artifacts
       - name: 'dotnet publish LLMChain.Core'
-        run: dotnet nuget push --api-key AzureArtifacts bin/Release/LLMChain.Core.*.nupkg
+        run: dotnet nuget push --api-key AzureArtifacts **/bin/Release/LLMChain.Core.*.nupkg
       - name: 'dotnet publish LLMChain.OpenAI'
-        run: dotnet nuget push --api-key AzureArtifacts bin/Release/LLMChain.OpenAI.*.nupkg
+        run: dotnet nuget push --api-key AzureArtifacts **/bin/Release/LLMChain.OpenAI.*.nupkg
       - name: 'dotnet publish LLMChain.Tools'
-        run: dotnet nuget push --api-key AzureArtifacts bin/Release/LLMChain.Tools.*.nupkg
+        run: dotnet nuget push --api-key AzureArtifacts **/bin/Release/LLMChain.Tools.*.nupkg
