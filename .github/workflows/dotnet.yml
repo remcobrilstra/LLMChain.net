@@ -56,5 +56,9 @@ jobs:
           dotnet pack -c '${{ env.BUILD_CONFIGURATION }}' --version-suffix $GITHUB_RUN_ID
 
       # Publish the package to Azure Artifacts
-      - name: 'dotnet publish'
-        run: dotnet nuget push --api-key AzureArtifacts bin/Release/*.nupkg
+      - name: 'dotnet publish LLMChain.Core'
+        run: dotnet nuget push --api-key AzureArtifacts bin/Release/LLMChain.Core.*.nupkg
+      - name: 'dotnet publish LLMChain.OpenAI'
+        run: dotnet nuget push --api-key AzureArtifacts bin/Release/LLMChain.OpenAI.*.nupkg
+      - name: 'dotnet publish LLMChain.Tools'
+        run: dotnet nuget push --api-key AzureArtifacts bin/Release/LLMChain.Tools.*.nupkg
