@@ -71,7 +71,11 @@ public class ConversationHistory
         //save history to file
         using (var fileStream = File.OpenRead(file))
         {
-            return await JsonSerializer.DeserializeAsync<ConversationHistory>(fileStream);
+            var res = new ConversationHistory();
+
+            res.Messages = await JsonSerializer.DeserializeAsync<List<Message>>(fileStream);
+
+            return res;
         }
     }
 
