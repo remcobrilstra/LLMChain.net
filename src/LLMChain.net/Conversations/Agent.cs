@@ -1,4 +1,5 @@
 ﻿using LLMChain.Core.Tools;
+using System.Text.Json.Serialization;
 
 namespace LLMChain.Core.Conversations;
 public class Agent
@@ -25,7 +26,7 @@ public class Agent
     }
 
 
-
-    public ITool[] Tools { get; set; }
+    [JsonIgnore]
+    public ITool[] Tools { get; private set; }
 
 }
