@@ -8,6 +8,9 @@ public interface IAIProvider
     string Key { get; }
     string DisplayName { get; }
 
+    bool CanStream { get; }
+    bool CanUseTools { get; }
+
     string ActiveModel { get; set; }
     string[] AvailableModels { get; }
 

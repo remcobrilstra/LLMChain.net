@@ -14,6 +14,9 @@ namespace LLMChain.Anthropic
         public string Key => "Claude";
         public string DisplayName => "Anthropic AI";
 
+        public bool CanStream => false;
+        public bool CanUseTools => false;
+
         public string[] AvailableModels => throw new NotImplementedException();
 
         public string ActiveModel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

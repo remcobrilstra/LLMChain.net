@@ -29,12 +29,12 @@ internal class Program
         {
             Agent = new Agent()
             {
-                Model = "gpt-4o-mini", //"gpt-4o",
-                ModelProvider = "OpenAI",
+                Model = "grok-beta", //"gpt-4o",
+                ModelProvider = "xAI",
                 Name = "J.A.R.V.I.S.",
                 SystemPrompt = systemPrompt,
                 ToolIds = new string[] { "CORE.WEBSCRAPE", "CORE.WEATHER", "CORE.SEARCH.BING", "CORE.ACTION.BROWSER" }
-            }
+            } 
         };
         conv.Agent.Initialize();
 
@@ -52,9 +52,13 @@ internal class Program
 
         IAIProvider OpenAiProvider = new OpenAIProvider(configuration["OpenAI:ApiKey"], "gpt-4o");
 
+
+        IAIProvider XAIProvider = new OpenAIProvider(configuration["xAI:ApiKey"], "grok-beta", "https://api.x.ai/v1/", "xAI");
+
         chatOrchestrator = new ChatOrchestrator();
 
         chatOrchestrator.AddAIProvider(OpenAiProvider);
+        chatOrchestrator.AddAIProvider(XAIProvider);
         chatOrchestrator.ModelInformation = models;
 
         ToolRepository.Instance.AddTool(new WeatherTool());
@@ -112,6 +116,7 @@ internal class Program
             Console.Write("[Human]: ");
             string input = Console.ReadLine();
 
+            //string st = chatOrchestrator.ActiveConversation.History.GetFullHistory().Last().Content;
 
             if (bool.Parse(configuration["General:StreamResponse"]))
             {
@@ -125,6 +130,7 @@ internal class Program
             }
             else
             {
+                string st = chatOrchestrator.ActiveConversation.History.GetFullHistory().Last().Content;
                 var resp = await chatOrchestrator.SendChatMessageAsync(new Message(input) { Type = Message.MessageType.User });
                 Console.WriteLine($"[AI]:{resp.Content}");
             }

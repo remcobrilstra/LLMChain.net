@@ -16,6 +16,11 @@ public class Conversation
 
         var modelInfo = ModelInformationRepository.Instance[Agent.Model];
 
+        if(modelInfo == null)
+        {
+            return 0;
+        }
+        
         foreach (var message in History.GetFullHistory())
         {
             if (message.InputTokens > 0)

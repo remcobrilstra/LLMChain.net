@@ -11,9 +11,12 @@ namespace LLMChain.OpenAI;
 
 public class OpenAIProvider : IAIProvider
 {
-    public string Key => "OpenAI";
-    public string DisplayName => $"OpenAI - {ActiveModel}";
+    private const string DefaultProvider = "OpenAI";
+    public string Key {get; private set;} = DefaultProvider;
+    public string DisplayName => $"{Key} - {ActiveModel}";
 
+    public bool CanStream => true;
+    public bool CanUseTools => true;
 
     private SystemMessage _systemPrompt { get; set; } = new SystemMessage();
 
@@ -61,9 +64,10 @@ public class OpenAIProvider : IAIProvider
 
 
 
-    public OpenAIProvider(string apiKey, string model, string apiEndpoint = API_ENDPOINT)
+    public OpenAIProvider(string apiKey, string model, string apiEndpoint = API_ENDPOINT, string provider = DefaultProvider)
     {
         ApiEndpointRoot = apiEndpoint;
+        Key = provider;
         ApiKey = apiKey;
         ActiveModel = model;
     }
