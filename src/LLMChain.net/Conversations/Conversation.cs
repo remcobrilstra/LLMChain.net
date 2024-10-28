@@ -20,6 +20,11 @@ public class Conversation
             return 0.0;
         }
 
+        if(modelInfo == null)
+        {
+            return 0;
+        }
+        
         foreach (var message in History.GetFullHistory())
         {
             if (message.InputTokens > 0)

@@ -11,7 +11,12 @@ public class ChatOrchestrator
 {
     private Dictionary<string,IAIProvider> aIProviders = new Dictionary<string, IAIProvider>();
     public Conversation ActiveConversation { get; set; }
-    public ModelInformation[]? ModelInformation { get; set; }
+    public ModelInformation[]? ModelInformation {
+        get
+        {
+            return ModelInformationRepository.Instance.Models;
+        }
+    }
 
     public ChatOrchestrator()
     {

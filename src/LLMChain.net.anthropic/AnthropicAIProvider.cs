@@ -25,6 +25,9 @@ public class AnthropicAIProvider : IAIProvider
     public string Key => "Claude";
     public string DisplayName => "Anthropic AI";
 
+    public bool CanStream => false;
+    public bool CanUseTools => true;
+
     #region models
     /// <summary>
     /// MODELS
