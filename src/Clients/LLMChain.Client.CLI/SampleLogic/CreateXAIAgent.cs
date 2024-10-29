@@ -16,7 +16,7 @@ namespace LLMChain.Client.CLI.SampleLogic;
 internal class CreateXAIAgent : ITestLogic
 {
 
-
+    public string Name => "Use OpenAI Provider for x.ai";
     public void Configure(IConfiguration configuration)
     {
         LoadModelData(configuration);

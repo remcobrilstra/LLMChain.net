@@ -10,6 +10,14 @@ namespace LLMChain.Core;
 public class ChatOrchestrator
 {
     private Dictionary<string,IAIProvider> aIProviders = new Dictionary<string, IAIProvider>();
+
+    public IAIProvider[] AIProviders 
+    { 
+        get
+        {
+            return aIProviders.Values.ToArray();
+        } 
+    }
     public Conversation ActiveConversation { get; set; }
     public ModelInformation[]? ModelInformation {
         get

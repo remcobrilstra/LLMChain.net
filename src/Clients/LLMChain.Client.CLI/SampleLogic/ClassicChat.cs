@@ -11,6 +11,9 @@ namespace LLMChain.Client.CLI.SampleLogic;
 internal class ClassicChat : ITestLogic
 {
     ChatOrchestrator chatOrchestrator;
+
+    public string Name => "Simple Chat Demo";
+
     public void Configure(IConfiguration configuration)
     {
         LoadModelData(configuration);
@@ -44,7 +47,6 @@ internal class ClassicChat : ITestLogic
                 SystemPrompt = "You are a tesla optimus, friendly general assistance robot, you live to serve"
             }
         };
-        conv.Agent.Initialize();
         chatOrchestrator.ActiveConversation = conv;
     }
 
@@ -56,11 +58,36 @@ internal class ClassicChat : ITestLogic
     }
 
 
-    string SelectModel()
+    string SelectProvider()
+    {
+        int i = 1;
+        Console.WriteLine("Available providers:");
+        var provider = chatOrchestrator.GetAIProvider("OpenAI");
+        chatOrchestrator.AIProviders.ToList().ForEach(model =>
+        {
+            Console.WriteLine($"{i}. {model.Key}");
+            i++;
+        });
+
+        while (true)
+        {
+            Console.Write($"Choose your provider (1-{i - 1}):");
+            if (int.TryParse(Console.ReadLine(), out int modelId))
+            {
+                return chatOrchestrator.AIProviders[modelId - 1].Key;
+            }
+            else
+            {
+                Console.WriteLine($"Thats not a valid provider identifier, please try again");
+            }
+        }
+    }
+
+    string SelectModel(string providerId)
     {
         int i = 1;
         Console.WriteLine("Available models:");
-        var provider = chatOrchestrator.GetAIProvider("OpenAI");
+        var provider = chatOrchestrator.GetAIProvider(providerId);
         provider.AvailableModels.ToList().ForEach(model =>
         {
             Console.WriteLine($"{i}. {model}");
@@ -116,6 +143,24 @@ internal class ClassicChat : ITestLogic
 
     public async Task Run(IConfiguration configuration)
     {
+
+        string provider = SelectProvider();
+
+        string model = SelectModel(provider);
+
+
+        var agent = new Agent()
+        {
+            Model = model,
+            ModelProvider = provider,
+            Name = "Tesla Optimus",
+            SystemPrompt = "You are a tesla optimus, friendly general assistance robot, you live to serve"
+        };
+        agent.Initialize();
+
+        chatOrchestrator.ActiveConversation.Agent = agent;
+
+
         await ChatLogicLoop();
     }
 }
