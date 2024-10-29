@@ -136,8 +136,10 @@ public class OpenAIProvider : IAIProvider
                         {
                             outputTokenCost = resp.Usage.CompletionTokens;
                             inputTokenCost = resp.Usage.PromptTokens;
-                            break;
                         }
+
+                        if (resp.Choices.Length == 0)
+                            continue;
 
                         var messageDelta = resp.Choices[0].Delta;
 

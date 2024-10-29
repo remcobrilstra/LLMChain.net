@@ -10,6 +10,8 @@ public class Message
 
     public class FuncData
     {
+        public string id;
+
         public string arguments { get; set; }
         public string name { get; set; }
     }
@@ -23,6 +25,7 @@ public class Message
         Agent,
         System,
         Technical,
+        FunctionCall,
         FunctionResponse
     }
 

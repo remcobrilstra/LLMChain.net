@@ -15,6 +15,10 @@ public class Conversation
         double cost = 0;
 
         var modelInfo = ModelInformationRepository.Instance[Agent.Model];
+        if(modelInfo == null)
+        {
+            return 0.0;
+        }
 
         if(modelInfo == null)
         {

@@ -18,7 +18,4 @@ public interface IAIProvider
     Task<Message> SendChatMessageAsync(Message message,ConversationHistory history, IEnumerable<ITool> tools = null);
     Task<Message> StreamChatMessage(Message message, ConversationHistory history, Action<string> OnStream, IEnumerable<ITool> tools = null);
 
-    void SetSystemPrompt(string sysPrompt);
-    string GetSystemPrompt();
-
 }

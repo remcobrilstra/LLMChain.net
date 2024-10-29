@@ -17,6 +17,15 @@ public class ModelInformationRepository
         get { return _models.FirstOrDefault(t => t.ModelId == ID); }
     }
 
+
+    public ModelInformation[]? Models
+    {
+        get
+        {
+            return _models.ToArray();
+        }
+    }
+
     private ModelInformationRepository() { }
 
     public void AddModels(ModelInformation[]? models)

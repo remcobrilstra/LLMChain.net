@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\LLMChain.net.anthropic\LLMChain.Anthropic.csproj" />
     <ProjectReference Include="..\..\LLMChain.net.OpenAI\LLMChain.OpenAI.csproj" />
     <ProjectReference Include="..\..\LLMChain.net\LLMChain.Core.csproj" />
     <ProjectReference Include="..\..\LLMChain.Tools\LLMChain.Tools.csproj" />
