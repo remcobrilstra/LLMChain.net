@@ -18,7 +18,7 @@ namespace LLMChain.Core.Conversations;
 public class ConversationHistory
 {
 
-    private Message SystemPrompt = new Message("") { Type = Message.MessageType.System , IsInternal = true};
+    private Message SystemPrompt = new Message("", MessageType.System) { IsInternal = true};
 
 
     public int count { get; set; } = 20;
@@ -53,7 +53,7 @@ public class ConversationHistory
     public void ClearHistory()
     {
         //clear all messages, retain system promopt
-        Messages.RemoveAll(x=>x.Type != Message.MessageType.System);
+        Messages.RemoveAll(x=>x.Type != MessageType.System);
     }
 
 

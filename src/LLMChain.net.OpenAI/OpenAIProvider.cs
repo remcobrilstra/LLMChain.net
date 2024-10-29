@@ -64,7 +64,7 @@ public class OpenAIProvider : IAIProvider
 
 
 
-    public OpenAIProvider(string apiKey, string model, string apiEndpoint = API_ENDPOINT, string provider = DefaultProvider)
+    public OpenAIProvider(string apiKey, string model = "", string apiEndpoint = API_ENDPOINT, string provider = DefaultProvider)
     {
         ApiEndpointRoot = apiEndpoint;
         Key = provider;
@@ -183,11 +183,10 @@ public class OpenAIProvider : IAIProvider
                 }
                 else
                 {
-                    return new Message(strbld.ToString())
+                    return new Message(strbld.ToString(), MessageType.Agent)
                     {
                         InputTokens = inputTokenCost,
-                        OutputTokens = outputTokenCost,
-                        Type = Message.MessageType.Agent
+                        OutputTokens = outputTokenCost
                     };
                 }
             }
@@ -252,11 +251,10 @@ public class OpenAIProvider : IAIProvider
                 }
                 else
                 {
-                    return new Message(completionResponse.Choices[0].Message.Content)
+                    return new Message(completionResponse.Choices[0].Message.Content, MessageType.Agent)
                     {
                         InputTokens = completionResponse.Usage.PromptTokens,
-                        OutputTokens = completionResponse.Usage.CompletionTokens,
-                        Type = Message.MessageType.Agent
+                        OutputTokens = completionResponse.Usage.CompletionTokens
                     };
                 }
 
@@ -275,15 +273,15 @@ public class OpenAIProvider : IAIProvider
         {
             role = x.Type switch
             {
-                Message.MessageType.System => MessageRole.System,
-                Message.MessageType.User => MessageRole.User,
-                Message.MessageType.Agent => MessageRole.Assistant,
-                Message.MessageType.FunctionResponse => MessageRole.Function,
+                MessageType.System => MessageRole.System,
+                MessageType.User => MessageRole.User,
+                MessageType.Agent => MessageRole.Assistant,
+                MessageType.FunctionResponse => MessageRole.Function,
                 _ => MessageRole._
             },
-            Name = x.Type == Message.MessageType.FunctionResponse ? x.FunctionCall.name : null,
+            Name = x.Type == MessageType.FunctionResponse ? x.FunctionCall.name : null,
             Content = x.Content,
-            function_call = (x.FunctionCall != null && x.Type != Message.MessageType.FunctionResponse) ? new Function_Call()
+            function_call = (x.FunctionCall != null && x.Type != MessageType.FunctionResponse) ? new Function_Call()
             {
                 name = x.FunctionCall?.name,
                 arguments = x.FunctionCall?.arguments
@@ -298,10 +296,9 @@ public class OpenAIProvider : IAIProvider
 
     private async Task HandleFunctionCall(Function_Call function_call, ConversationHistory history, IEnumerable<ITool> tools)
     {
-        history.PushMessage(new Message("")
+        history.PushMessage(new Message("", MessageType.Agent)
         {
             FunctionCall = new Message.FuncData() { name = function_call.name, arguments = function_call.arguments },
-            Type = Message.MessageType.Agent,
             IsInternal = true
         });
 
@@ -311,9 +308,8 @@ public class OpenAIProvider : IAIProvider
         var result = await tools.First(x => x.Name == function_call.name).Invoke(args);
 
 
-        history.PushMessage(new Message(result)
+        history.PushMessage(new Message(result, MessageType.FunctionResponse)
         {
-            Type = Message.MessageType.FunctionResponse,
             FunctionCall = new Message.FuncData() { name = function_call.name, arguments = function_call.arguments },
             IsInternal = true
         });

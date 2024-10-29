@@ -124,7 +124,7 @@ internal class ClassicChat : ITestLogic
             if (chatOrchestrator.GetAIProvider(chatOrchestrator.ActiveConversation.Agent.ModelProvider).CanStream)
             {
                 Console.Write($"[AI]: ");
-                var resp = await chatOrchestrator.StreamChatMessageAsync(new Message(input) { Type = Message.MessageType.User }, chunk =>
+                var resp = await chatOrchestrator.StreamChatMessageAsync(new Message(input), chunk =>
                 {
                     Console.Write(chunk);
                     Console.Out.Flush();
@@ -133,8 +133,7 @@ internal class ClassicChat : ITestLogic
             }
             else
             {
-                string st = chatOrchestrator.ActiveConversation.History.GetFullHistory().Last().Content;
-                var resp = await chatOrchestrator.SendChatMessageAsync(new Message(input) { Type = Message.MessageType.User });
+                var resp = await chatOrchestrator.SendChatMessageAsync(new Message(input));
                 Console.WriteLine($"[AI]:{resp.Content}");
             }
 

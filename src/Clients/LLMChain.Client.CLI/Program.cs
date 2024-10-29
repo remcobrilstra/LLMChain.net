@@ -14,7 +14,8 @@ internal class Program
         ITestLogic[] demos = new ITestLogic[]
         {
             new ClassicChat(),
-            new CreateXAIAgent()
+            new CreateXAIAgent(),
+            new SimpleChat(),
         };
 
         var demo = SelectDemo(demos);

@@ -248,9 +248,8 @@ public class AnthropicAIProvider : IAIProvider
                         {
                             case "text":
                                 {
-                                    history.PushMessage(new Message(content.text)
+                                    history.PushMessage(new Message(content.text, MessageType.Agent)
                                     {
-                                        Type = Message.MessageType.Agent,
                                         IsInternal = false
                                     });
                                 }
@@ -268,11 +267,10 @@ public class AnthropicAIProvider : IAIProvider
                 }
                 else
                 {
-                    return new Message(completionResponse.content[0].text)
+                    return new Message(completionResponse.content[0].text, MessageType.Agent)
                     {
                         InputTokens = (uint)completionResponse.usage.input_tokens,
-                        OutputTokens = (uint)completionResponse.usage.output_tokens,
-                        Type = Message.MessageType.Agent
+                        OutputTokens = (uint)completionResponse.usage.output_tokens
                     };
                 }
 
@@ -290,23 +288,23 @@ public class AnthropicAIProvider : IAIProvider
         //throw new NotImplementedException();
         List<AntMessage> result = new List<AntMessage>();
 
-        foreach(var msg in messages.Where(x => x.Type != Message.MessageType.System))
+        foreach(var msg in messages.Where(x => x.Type != MessageType.System))
         {
             var antMsg = new AntMessage();
 
             antMsg.role = msg.Type switch
             {
-                Message.MessageType.User => "user",
-                Message.MessageType.Agent => "assistant",
-                Message.MessageType.FunctionResponse => "user",
-                Message.MessageType.FunctionCall => "assistant",
+                MessageType.User => "user",
+                MessageType.Agent => "assistant",
+                MessageType.FunctionResponse => "user",
+                MessageType.FunctionCall => "assistant",
                 _ => ""
             };
 
             antMsg.content = msg.Type switch
             {
-                Message.MessageType.FunctionCall => [new MsgContext() { type = "tool_use", id = msg.FunctionCall.id, name = msg.FunctionCall.name, input = JsonSerializer.Deserialize<dynamic>(msg.FunctionCall.arguments) }],
-                Message.MessageType.FunctionResponse => [new MsgContext() { content = msg.Content, tool_use_id = msg.FunctionCall.id, type = "tool_result" }],
+                MessageType.FunctionCall => [new MsgContext() { type = "tool_use", id = msg.FunctionCall.id, name = msg.FunctionCall.name, input = JsonSerializer.Deserialize<dynamic>(msg.FunctionCall.arguments) }],
+                MessageType.FunctionResponse => [new MsgContext() { content = msg.Content, tool_use_id = msg.FunctionCall.id, type = "tool_result" }],
                 _ => [new MsgContext() { type = "text", text = msg.Content }]
             };
 
@@ -318,10 +316,9 @@ public class AnthropicAIProvider : IAIProvider
 
     private async Task HandleFunctionCall(AntChatCompletionResponse.Context function_call, ConversationHistory history, IEnumerable<ITool> tools)
     {
-        history.PushMessage(new Message("")
+        history.PushMessage(new Message("", MessageType.FunctionCall)
         {
             FunctionCall = new Message.FuncData() { name = function_call.name, arguments = function_call.input.ToString(), id = function_call.id },
-            Type = Message.MessageType.FunctionCall,
             IsInternal = true
         });
 
@@ -331,9 +328,8 @@ public class AnthropicAIProvider : IAIProvider
         var result = await tools.First(x => x.Name == function_call.name).Invoke(args);
 
 
-        history.PushMessage(new Message(result)
+        history.PushMessage(new Message(result, MessageType.FunctionResponse)
         {
-            Type = Message.MessageType.FunctionResponse,
             FunctionCall = new Message.FuncData() { name = function_call.name, id = function_call.id, arguments = function_call.input.ToString() },
             IsInternal = true
         });

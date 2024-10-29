@@ -5,6 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LLMChain.Core.Conversations;
+
+public enum MessageType
+{
+    User,
+    Agent,
+    System,
+    Technical,
+    FunctionCall,
+    FunctionResponse
+}
+
 public class Message
 {
 
@@ -18,17 +29,6 @@ public class Message
 
     public FuncData FunctionCall { get; set; }
 
-
-    public enum MessageType
-    {
-        User,
-        Agent,
-        System,
-        Technical,
-        FunctionCall,
-        FunctionResponse
-    }
-
     public MessageType Type { get; set; }
 
     public bool IsInternal { get; set; }
@@ -39,9 +39,10 @@ public class Message
     public uint InputTokens { get; set; }
     public uint OutputTokens { get; set; }
 
-    public Message(string content)
+    public Message(string content, MessageType type = MessageType.User)
     {
         Content = content;
+        Type = type;
         Timestamp = DateTime.Now;
     }
 }
