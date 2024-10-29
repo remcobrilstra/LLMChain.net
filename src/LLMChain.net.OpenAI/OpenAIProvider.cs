@@ -160,7 +160,7 @@ public class OpenAIProvider : IAIProvider
                         {
                             try
                             {
-                                if (!String.IsNullOrWhiteSpace(messageDelta.Content))
+                                if (!String.IsNullOrEmpty(messageDelta.Content))
                                 {
                                     OnStream(messageDelta.Content);
                                     strbld.Append(messageDelta.Content);

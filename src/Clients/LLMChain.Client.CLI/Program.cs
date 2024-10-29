@@ -16,6 +16,7 @@ internal class Program
             new ClassicChat(),
             new CreateXAIAgent(),
             new SimpleChat(),
+            new CreateLMStudioAgent()
         };
 
         var demo = SelectDemo(demos);

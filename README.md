@@ -19,4 +19,3 @@ Have fun :)
 ## To Do
 - Refactor the code the make you eyes bleed less
 - Implement custom CoT logic, because why not
-- Support (LM Studio)[https://lmstudio.ai/] as a provider (although the API is the same as OpenAI's?! so mostly copy-paste?)
