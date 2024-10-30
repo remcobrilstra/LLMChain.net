@@ -66,5 +66,7 @@ jobs:
         run: dotnet nuget push --api-key AzureArtifacts **/bin/Release/LLMChain.Core.*$GITHUB_RUN_ID.nupkg
       - name: 'dotnet publish LLMChain.OpenAI'
         run: dotnet nuget push --api-key AzureArtifacts **/bin/Release/LLMChain.OpenAI.*$GITHUB_RUN_ID.nupkg
+      - name: 'dotnet publish LLMChain.Anthropic'
+        run: dotnet nuget push --api-key AzureArtifacts **/bin/Release/LLMChain.Anthropic.*$GITHUB_RUN_ID.nupkg
       - name: 'dotnet publish LLMChain.Tools'
         run: dotnet nuget push --api-key AzureArtifacts **/bin/Release/LLMChain.Tools.*$GITHUB_RUN_ID.nupkg
