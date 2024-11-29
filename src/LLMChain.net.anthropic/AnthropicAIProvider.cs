@@ -25,7 +25,7 @@ public class AnthropicAIProvider : IAIProvider
     public string Key => "Claude";
     public string DisplayName => "Anthropic AI";
 
-    public bool CanStream => false;
+    public bool CanStream => true;
     public bool CanUseTools => true;
 
     #region models
@@ -76,9 +76,74 @@ public class AnthropicAIProvider : IAIProvider
     }
 
 
+public class ContentBlock{
+    public string type { get; set; }
+    public string text { get; set; }
+    public string id { get; set; }
+    public string name { get; set; }
+    public dynamic input { get; set; }
+}
+
+    public class Function_Call
+    {
+        public string name { get; set; }
+        public string arguments { get; set; }
+}
+
+public class Error{
+    public string type { get; set; }
+    public string message { get; set; }
+}
+
+public class Message_delta{
+    public string type{get;set;}
+    public AntChatCompletionResponse delta { get; set; }
+    public Usage usage { get; set; }
+}
+
+public class Tool_Use{
+    public string type {get;set;}
+    public string id { get; set; }
+    public string name { get; set; }
+
+    public object input { get; set; }
+
+}
+public class Tool_use_delta{
+    public string type { get; set; }
+    public Tool_Use content_block {get;set;}
+
+}
+
+public class partial_json_delta{
+    public string type { get; set; }
+    public string partial_json {get;set;}
+}
+
+public class StreamResponseContentBlock<T>{
+    public string type { get; set; }
+    public T content_block {get;set;}
+}
+
+public class StreamResponseDelta<T>{
+    public string type { get; set; }
+    public T delta { get; set; }
+}
 
 
+    public class StreamResponse{
+        public string type { get; set; }
+        public AntChatCompletionResponse message { get; set; }
+        public ContentBlock content_block { get; set; }
+        public ContentBlock delta { get; set; }
 
+        public Error error { get; set; }
+    }
+        public class Usage
+        {
+            public int input_tokens { get; set; }
+            public int output_tokens { get; set; }
+        }
     public class AntChatCompletionResponse
     {
         public Context[] content { get; set; }
@@ -90,11 +155,7 @@ public class AnthropicAIProvider : IAIProvider
         public string type { get; set; }
         public Usage usage { get; set; }
 
-        public class Usage
-        {
-            public int input_tokens { get; set; }
-            public int output_tokens { get; set; }
-        }
+
         public class Context
         { //"id":"toolu_01NKXx61Mps3CZ6r6bhcjuWm","name":"Search","input":{"query":"Claude API tool calling C# implementation"}}
             public string type { get; set; }
@@ -182,8 +243,157 @@ public class AnthropicAIProvider : IAIProvider
 
     private async Task<Message> StreamConversationStep(IEnumerable<ITool> tools, ConversationHistory history, Action<string> OnStream)
     {
-        throw new NotImplementedException();
+        AntMessagesCompletionRequest request = new AntMessagesCompletionRequest()
+        {
+            Model = ActiveModel,
+            MaxTokens = 8192,
+            Stream = true,
+            System = history.GetSystemPrompt(),
+            Messages = ConvertToAntMessages(history.GetPromptHistory().ToArray()),
+            Tools = ConvertInternalToOpenAIFunctions(tools)
+        };
+        try
+        {
+            using (HttpClient wClient = new HttpClient())
+            {
+                wClient.DefaultRequestHeaders.Add("x-api-key", ApiKey);
+                wClient.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
+                var response = await wClient.PostAsJsonAsync($"{ApiEndpointRoot}messages", request, jsSerializerOption);
+
+                 using var stream = await response.Content.ReadAsStreamAsync();
+                using var reader = new StreamReader(stream);
+
+
+
+                StringBuilder strbld = new StringBuilder();
+
+                bool functionmode = false;
+                Context func = new Context();
+                StreamResponse resp = null;
+                AntChatCompletionResponse message = null;
+                uint inputTokenCost = 0;
+                uint outputTokenCost = 0;
+                while (!reader.EndOfStream)
+                {
+                    var line = await reader.ReadLineAsync();
+                    if (string.IsNullOrEmpty(line)) continue;
+                    if (line.StartsWith("data: "))
+                    {
+                        var json = line.Substring(6);
+
+                        resp = JsonSerializer.Deserialize<StreamResponse>(json, jsSerializerOption);
+
+                        switch(resp.type)
+                        {
+                            case "content_block_start":
+                                {
+                                    switch(resp.content_block.type)
+                                    {
+                                        case "tool_use":
+                                        {
+                                            functionmode = true;
+                                            func.input = "";
+                                            var tool = JsonSerializer.Deserialize<StreamResponseContentBlock<Tool_Use>>(json, jsSerializerOption);
+                                            func.name = tool.content_block.name;
+                                            func.id = tool.content_block.id;
+                                        }
+                                            break;
+                                        case "text":
+                                            {
+                                                OnStream(resp.content_block.text);
+                                                strbld.Append(resp.content_block.text);
+                                            }
+                                            break;
+                                    }
+                                    continue;
+                                }
+                                break;
+                            case "content_block_delta":
+                                {
+                                    switch(resp.delta.type)
+                                    {
+                                        case "input_json_delta":
+                                        {
+                                            var tool = JsonSerializer.Deserialize<StreamResponseDelta<partial_json_delta>>(json, jsSerializerOption);
+                                            func.input += tool.delta.partial_json;
+                                        }
+                                            break;
+                                        case "text_delta":
+                                            {
+                                                OnStream(resp.delta.text);
+                                                strbld.Append(resp.delta.text);
+                                            }
+                                            break;
+                                    }
+                                    continue;
+                                }
+                            case "content_block_stop":
+                            {
+
+                                continue;
+                            }
+                            case "message_start":
+                                {
+                                    message = resp.message;
+                                    if (message.usage != null)
+                                    {
+                                        outputTokenCost += (uint)message.usage.output_tokens;
+                                        inputTokenCost += (uint)message.usage.input_tokens;
+                                    }
+                                }
+                                break;
+                            case "message_delta":
+                                {
+                                    var msg = JsonSerializer.Deserialize<Message_delta>(json, jsSerializerOption);
+                                    message = msg.delta;
+                                    if (msg.usage != null)
+                                    {
+                                        outputTokenCost += (uint)msg.usage.output_tokens;
+                                        inputTokenCost += (uint)msg.usage.input_tokens;
+                                    }
+                                }
+                                break;
+                            case "message_stop":
+                              break;
+                            case "error":
+                                {
+                                    if(resp.error.type == "overloaded_error")
+                                    {
+                                        Thread.Sleep(1000);
+                                        return await StreamConversationStep(tools, history, OnStream);
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    if (line == "event: message_stop") break;
+                }
+
+                if (functionmode)
+                {
+                    await HandleFunctionCall(func, history, tools);
+                    var msg = await StreamConversationStep(tools, history, OnStream);
+                    history.PushMessage(msg);
+                    return msg;
+                }
+                else
+                {
+                    return new Message(strbld.ToString(), MessageType.Agent)
+                    {
+                        InputTokens = inputTokenCost,
+                        OutputTokens = outputTokenCost
+                    };
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return null;
+        }
     }
+
+
 
     private static AntFunctionDef[]? ConvertInternalToOpenAIFunctions(IEnumerable<ITool> tools)
     {

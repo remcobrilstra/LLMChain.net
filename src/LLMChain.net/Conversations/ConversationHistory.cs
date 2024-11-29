@@ -35,6 +35,11 @@ public class ConversationHistory
 
     public void PushMessage(Message message)
     {
+        if(message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+        
         Messages.Add(message);
     }
 

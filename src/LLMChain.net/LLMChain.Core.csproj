@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -9,5 +8,4 @@
     <Company>rb</Company>
     <Product>LLMChain.Core</Product>
   </PropertyGroup>
-
 </Project>
