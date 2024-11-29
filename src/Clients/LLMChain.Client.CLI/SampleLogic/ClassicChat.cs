@@ -36,18 +36,6 @@ internal class ClassicChat : ITestLogic
         ToolRepository.Instance.AddTool(new BingSearchTool(configuration["Tools:BingSearch:SubscriptionKey"]));
         ToolRepository.Instance.AddTool(new WebPageTool());
         ToolRepository.Instance.AddTool(new OpenBrowser());
-
-        Conversation conv = new Conversation()
-        {
-            Agent = new Agent()
-            {
-                Model = "gpt-4o", //"grok-beta", //"gpt-4o",
-                ModelProvider = "OpenAI",
-                Name = "Tesla Optimus",
-                SystemPrompt = "You are a tesla optimus, friendly general assistance robot, you live to serve"
-            }
-        };
-        chatOrchestrator.ActiveConversation = conv;
     }
 
     private static void LoadModelData(IConfiguration configuration)
@@ -62,7 +50,6 @@ internal class ClassicChat : ITestLogic
     {
         int i = 1;
         Console.WriteLine("Available providers:");
-        var provider = chatOrchestrator.GetAIProvider("OpenAI");
         chatOrchestrator.AIProviders.ToList().ForEach(model =>
         {
             Console.WriteLine($"{i}. {model.Key}");
@@ -148,17 +135,19 @@ internal class ClassicChat : ITestLogic
         string model = SelectModel(provider);
 
 
-        var agent = new Agent()
+        Conversation conv = new Conversation()
         {
-            Model = model,
-            ModelProvider = provider,
-            Name = "Tesla Optimus",
-            SystemPrompt = "You are a tesla optimus, friendly general assistance robot, you live to serve"
+            Agent = new Agent()
+            {
+                Model = model, //"grok-beta", //"gpt-4o",
+                ModelProvider = provider,
+                Name = "Tesla Optimus",
+                SystemPrompt = "You are a tesla optimus, friendly general assistance robot, you live to serve",
+                ToolIds = [ "CORE.WEATHER"]
+            }
         };
-        agent.Initialize();
-
-        chatOrchestrator.ActiveConversation.Agent = agent;
-
+        conv.Agent.Initialize();
+        chatOrchestrator.ActiveConversation = conv;
 
         await ChatLogicLoop();
     }

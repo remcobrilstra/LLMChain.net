@@ -20,7 +20,7 @@ internal class Program
         };
 
         var demo = SelectDemo(demos);
-        Console.Clear();
+        //Console.Clear();
 
         configuration = Util.LoadConfiguration();
 
